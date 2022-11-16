@@ -12,7 +12,7 @@ let database;
 
 async function initDatabase() {
   const client = await MongoClient.connect(mongodbURL);
-  database = client.db('deployment');
+  database = client.db('user');
 }
 
 function getDb() {
