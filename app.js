@@ -28,7 +28,9 @@ app.use(function(error, req, res, next) {
 
 db.initDatabase()
   .then(function () {
-    server.listen(8080);
+    server.listen(8080, function() {
+        console.log("suceess")
+    });
   })
   .catch(function (error) {
     console.log('Connecting to the database failed!');

@@ -1,8 +1,7 @@
-const mongodb = require('mongodb');
+const mongoose = require('mongoose');
 
-const MongoClient = mongodb.MongoClient;
 
-let mongodbURL = 'mongodb://jung:jung@54.176.26.102/27017';
+let mongodbURL = 'mongodb://jung:jung@54.176.26.102:27017/users';
 
 if(process.env.MONGODB_URL) {
   mongodbURL = process.env.MONGODB_URL
@@ -11,8 +10,11 @@ if(process.env.MONGODB_URL) {
 let database;
 
 async function initDatabase() {
-  const client = await MongoClient.connect(mongodbURL);
-  database = client.db('user');
+  if(process.env.NODE_ENV !== 'production'){ //개발환경일 경우에만 콘솔 출력
+    mongoose.set('debug',true);
+  }
+  const client = await mongoose.connect(mongodbURL)
+  database = client.connection;
 }
 
 function getDb() {
