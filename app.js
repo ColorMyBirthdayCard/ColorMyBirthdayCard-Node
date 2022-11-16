@@ -22,6 +22,14 @@ app.post('/', function(req, res) {
     res.send("post")
 })
 
-server.listen(8080, function() {
-    console.log("start_Learning")
-})
+app.use(function(error, req, res, next) {
+    //res.status(500).render('500');
+})  
+
+db.initDatabase()
+  .then(function () {
+    server.listen(8080);
+  })
+  .catch(function (error) {
+    console.log('Connecting to the database failed!');
+  });
