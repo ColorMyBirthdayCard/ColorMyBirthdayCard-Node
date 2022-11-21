@@ -42,13 +42,17 @@ router.post('/register', async function(res, req) {
 })
 
 router.post('/login', async function(res, req) {
+    console.log("post!----------")
     const { userId, password } = req.body
 
     try {
       if(!userId.valid()) throw new Error("userId invalid")
       if(!password.valid()) throw new Error("password invalid")
     } catch(err) {
-        if(err) res.status(406).json({message: err.message})
+        if(err) {
+            res.status(406).json({message: err.message})
+            return
+        }
     }
 
     console.log(userId)
@@ -59,7 +63,7 @@ router.post('/login', async function(res, req) {
     .findOne({userId: userId, password: password}) 
        //status : existing user 
     console.log("111")
-    
+
     if(!existingUser) {
         res.status(401).json({message: err.message});
         return;
