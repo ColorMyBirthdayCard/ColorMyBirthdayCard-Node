@@ -1,0 +1,73 @@
+const express = require('express');
+const bcrypt = require('bcryptjs')
+
+const db = require('../data/database');
+const session = require('express-session');
+
+const router = express.Router();
+
+async function checkExistingUser(userId) {
+    const existingUser = await db
+    .getDb()
+    .collection('users')
+    .findOne({userId: userId})    //status : existing user 
+
+    return existingUser
+}
+
+router.get('/', async function(res, req) {
+    const user = db.getDb().collection('session').findMany({})
+    console.log(user)
+
+    // res.send("<h1>session store</h1>")
+})
+
+router.post('/register', async function(res, req) {
+    const userData = req.body;
+    const userId = userData.userId;
+    const password = userData.password;
+
+    if(checkExistingUser(userId)) {
+        return res.statusCode(404).send("sada")
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    
+    const user = {
+        userId: userId,
+        password: hashedPassword
+    }
+    await db.getDb().collection("user").insetOne(user)
+    res.send("done login") //done
+})
+
+router.post('/login', async function(res, req) {
+    const userData = req.body;
+    const userId = userData.userId;
+    const password = userData.password;
+
+    const existingUser = await db
+    .getDb()
+    .collection('users')
+    .findOne({userId: userId, password: password})    //status : existing user 
+
+    if(!existingUser) {
+        // header 에 status code 담기
+    }
+    req.session.user = { id: existingUser._id, id: existingUser.userId}
+    req.session.isAuthentication = true;
+
+    req.session.save(function() {
+        const userInformation = {
+            sessionId: req.sessionId,
+            memberId: existingUser._id
+        }
+        return userInformation
+        //Json : sessionId + memberId
+    })
+})
+
+
+
+
+module.exports = router

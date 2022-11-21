@@ -6,25 +6,23 @@ const session = require('express-session')
 const mongodbStore = require('connect-mongodb-session')
 
 const db = require('./data/database')
+const appRouter = require('./routes/router')
+
 const app = express();
+
+const MongoDBStore = mongodbStore(session)
+
+const sessionStore = new MongoDBStore({
+  uri: 'mongodb://jung:jung@54.176.26.102:27017/cards',
+  collection: 'sessions'
+});
 
 const server = require('http').createServer(app);
 
 app.use(cors())
+app.use(express.urlencoded({extended: false}))
 
-app.get('/', function (req, res) {
-    console.log(req)
-    res.send("get")
-})
-
-app.post('/', function(req, res) {
-    console.log(req)
-    res.send("post")
-})
-
-app.use(function(error, req, res, next) {
-    //res.status(500).render('500');
-})  
+app.use(appRouter)  
 
 db.initDatabase()
   .then(function () {
