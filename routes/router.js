@@ -42,17 +42,27 @@ router.post('/register', async function(res, req) {
 })
 
 router.post('/login', async function(res, req) {
-    const userData = req.body;
-    const userId = userData.userId;
-    const password = userData.password;
+    const { userId, password } = req.body
+
+    try {
+      if(!userId.valid()) throw new Error("userId invalid")
+      if(!password.valid()) throw new Error("password invalid")
+    } catch(err) {
+        if(err) res.status(406).json({message: err.message})
+    }
+
     console.log(userId)
+
     const existingUser = await db
     .getDb()
     .collection('users')
-    .findOne({userId: userId, password: password})    //status : existing user 
+    .findOne({userId: userId, password: password}) 
+       //status : existing user 
     console.log("111")
+    
     if(!existingUser) {
-        // header 에 status code 담기
+        res.status(401).json({message: err.message});
+        return;
     }
     req.session.user = { id: existingUser._id, id: existingUser.userId}
     req.session.isAuthentication = true;
