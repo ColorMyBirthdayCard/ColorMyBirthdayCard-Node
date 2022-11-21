@@ -45,28 +45,31 @@ router.post('/login', async function(res, req) {
     const userData = req.body;
     const userId = userData.userId;
     const password = userData.password;
-
+    console.log(userId)
     const existingUser = await db
     .getDb()
     .collection('users')
     .findOne({userId: userId, password: password})    //status : existing user 
-
+    console.log("111")
     if(!existingUser) {
         // header 에 status code 담기
     }
     req.session.user = { id: existingUser._id, id: existingUser.userId}
     req.session.isAuthentication = true;
+    console.log("222")
 
     req.session.save(function() {
         const userInformation = {
-            'data': {
-                'sessionId': req.sessionId,
-                'memberId': existingUser._id
+            data: {
+                sessionId: req.sessionId,
+                memberId: existingUser._id
             }
         }
         res.send(userInformation)
         //Json : sessionId + memberId
     })
+    console.log("333")
+
 })
 
 
