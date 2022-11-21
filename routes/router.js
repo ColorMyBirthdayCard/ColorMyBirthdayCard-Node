@@ -15,14 +15,14 @@ async function checkExistingUser(userId) {
     return existingUser
 }
 
-router.get('/', async function(res, req) {
+router.get('/', async function(req, res) {
     const user = db.getDb().collection('session').findMany({})
     console.log(user)
 
     // res.send("<h1>session store</h1>")
 })
 
-router.post('/register', async function(res, req) {
+router.post('/register', async function(req, res) {
     const userData = req.body;
     const userId = userData.userId;
     const password = userData.password;
@@ -41,7 +41,7 @@ router.post('/register', async function(res, req) {
     res.send("done login") //done
 })
 
-router.post('/login', async function(res, req) {
+router.post('/login', async function(req, res) {
     console.log("post!----------")
     console.log(req)
     console.log(req.params)
