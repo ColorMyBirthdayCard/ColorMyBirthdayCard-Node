@@ -43,18 +43,11 @@ router.post('/register', async function(req, res) {
 
 router.post('/login', async function(req, res) {
     console.log("post!----------")
-    console.log(req)
-    console.log(req.params)
-    if(req.body) {
-            console.log("errrrr");
-    } else {
-            console.log("undefined");
-    }
-    const { userId, password } = req.body
+    const {userId, password} = req.body
 
     try {
-      if(!userId.valid()) throw new Error("userId invalid")
-      if(!password.valid()) throw new Error("password invalid")
+      if(!userId) throw new Error("userId invalid")
+      if(!password) throw new Error("password invalid")
     } catch(err) {
         if(err) {
             res.status(406).json({message: err.message})
@@ -69,7 +62,7 @@ router.post('/login', async function(req, res) {
     .collection('users')
     .findOne({userId: userId, password: password})
        //status : existing user 
-    console.log("111")
+    console.log("find User in Database")
 
     if(!existingUser) {
         res.status(401).json({message: err.message});
@@ -77,7 +70,7 @@ router.post('/login', async function(req, res) {
     }
     req.session.user = { id: existingUser._id, id: existingUser.userId}
     req.session.isAuthentication = true;
-    console.log("222")
+    console.log("find the session store")
 
     req.session.save(function() {
         const userInformation = {

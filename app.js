@@ -20,11 +20,16 @@ const sessionStore = new MongoDBStore({
 
 const server = require('http').createServer(app);
 
-app.use(cors())
-//app.use(bodyParser.json())
-app.use(express.json())
+app.use(session({
+    secret: 'super-secret',
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore
+}))
 
-//app.use(bodyParser.urlencoded({extended: true}))
+app.use(cors())
+app.use(express.json())
+app.use(bodyParser.urlencoded({extended: true}))
 
 app.use(appRouter)
 
