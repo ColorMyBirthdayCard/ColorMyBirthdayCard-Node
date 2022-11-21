@@ -59,10 +59,12 @@ router.post('/login', async function(res, req) {
 
     req.session.save(function() {
         const userInformation = {
-            sessionId: req.sessionId,
-            memberId: existingUser._id
+            'data': {
+                'sessionId': req.sessionId,
+                'memberId': existingUser._id
+            }
         }
-        return userInformation
+        res.send(userInformation)
         //Json : sessionId + memberId
     })
 })
