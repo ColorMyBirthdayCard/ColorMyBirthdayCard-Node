@@ -4,6 +4,7 @@ const express = require('express')
 const cors = require('cors')
 const session = require('express-session')
 const mongodbStore = require('connect-mongodb-session')
+const bodyParser = require('body-parser')
 
 const db = require('./data/database')
 const appRouter = require('./routes/router')
@@ -20,7 +21,8 @@ const sessionStore = new MongoDBStore({
 const server = require('http').createServer(app);
 
 app.use(cors())
-app.use(express.urlencoded({extended: false}))
+app.use(bodyParser.json())
+// app.use(express.urlencoded({extended: false}))
 
 app.use(appRouter)  
 
