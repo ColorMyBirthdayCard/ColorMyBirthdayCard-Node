@@ -21,10 +21,12 @@ const sessionStore = new MongoDBStore({
 const server = require('http').createServer(app);
 
 app.use(cors())
-app.use(bodyParser.json())
-// app.use(express.urlencoded({extended: false}))
+//app.use(bodyParser.json())
+app.use(express.json())
 
-app.use(appRouter)  
+//app.use(bodyParser.urlencoded({extended: true}))
+
+app.use(appRouter)
 
 db.initDatabase()
   .then(function () {

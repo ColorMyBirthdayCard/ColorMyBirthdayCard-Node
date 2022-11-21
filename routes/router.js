@@ -43,6 +43,13 @@ router.post('/register', async function(res, req) {
 
 router.post('/login', async function(res, req) {
     console.log("post!----------")
+    console.log(req)
+    console.log(req.params)
+    if(req.body) {
+            console.log("errrrr");
+    } else {
+            console.log("undefined");
+    }
     const { userId, password } = req.body
 
     try {
@@ -60,7 +67,7 @@ router.post('/login', async function(res, req) {
     const existingUser = await db
     .getDb()
     .collection('users')
-    .findOne({userId: userId, password: password}) 
+    .findOne({userId: userId, password: password})
        //status : existing user 
     console.log("111")
 
@@ -85,6 +92,7 @@ router.post('/login', async function(res, req) {
     console.log("333")
 
 })
+
 
 
 
