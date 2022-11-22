@@ -1,25 +1,16 @@
 const express = require('express');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
+
 
 const db = require('../data/database');
-const session = require('express-session');
+const passport = require('passport')
 
 const router = express.Router();
 
-async function checkExistingUser(userId) {
-    const existingUser = await db
-    .getDb()
-    .collection('users')
-    .findOne({userId: userId})    //status : existing user 
-
-    return existingUser
-}
 
 router.get('/', async function(req, res) {
-    const user = db.getDb().collection('session').findMany({})
-    console.log(user)
 
-    // res.send("<h1>session store</h1>")
 })
 
 router.post('/register', async function(req, res) {
@@ -41,52 +32,34 @@ router.post('/register', async function(req, res) {
     res.send("done login") //done
 })
 
-router.post('/login', async function(req, res) {
+router.post('/login', function(req, res) {
     console.log("post!----------")
-    const {userId, password} = req.body
+    passport.authenticate('local', (authError, user, info) => {
 
-    try {
-      if(!userId) throw new Error("userId invalid")
-      if(!password) throw new Error("password invalid")
-    } catch(err) {
-        if(err) {
-            res.status(406).json({message: err.message})
-            return
-        }
+    // done(err)가 처리된 경우
+    if (authError) {
+       console.error(authError);
+       return res.status(401)
+    }
+    //비번 일치 X or 존재 X user
+    if (!user) {
+       // done()의 3번째 인자 { message: '비밀번호가 일치하지 않습니다.' }가 실행
+       return res.status(401).send(info.message);
     }
 
-    console.log(userId)
-
-    const existingUser = await db
-    .getDb()
-    .collection('users')
-    .findOne({userId: userId, password: password})
-       //status : existing user 
-    console.log("find User in Database")
-
-    if(!existingUser) {
-        res.status(401).json({message: err.message});
-        return;
-    }
-    req.session.user = { id: existingUser._id, id: existingUser.userId}
-    req.session.isAuthentication = true;
-    console.log("find the session store")
-
-    req.session.save(function() {
-        const userInformation = {
-            data: {
-                sessionId: req.sessionId,
-                memberId: existingUser._id
-            }
-        }
-        res.send(userInformation)
-        //Json : sessionId + memberId
-    })
-    console.log("333")
-
-})
-
-
+    //Login 성공
+    return req.login(user, loginError => {
+       //? loginError => 미들웨어는 passport/index.js의 passport.deserializeUser((id, done) => 가 done()이 되면 실행하게 된다.
+       // 만일 done(err) 가 됬다면,
+       if (loginError) {
+          console.error(loginError);
+          return res.status(401);
+       }
+       // done(null, user)로 로직이 성공적이라면, 세션에 사용자 정보를 저장해놔서 로그인 상태가 된다.
+       console.log(req.session.user)
+    });
+ })(req, res, next); //! 미들웨어 내의 미들웨어에는 콜백을 실행시키기위해 (req, res, next)를 붙인다.
+});
 
 
 
