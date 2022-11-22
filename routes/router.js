@@ -5,7 +5,7 @@ const db = require('../data/database');
 const router = express.Router();
 
 
-router.get('/', async function(req, res) {
+router.get('/',  function(req, res) {
     const user = db.getDb().collection('session').findMany({})
     console.log(user)
 
@@ -63,6 +63,16 @@ router.post('/login', async function(req, res) {
         });
      })(req, res); //! 미들웨어 내의 미들웨어에는 콜백을 실행시키기위해 (req, res, next)를 붙인다.
 });
+
+router.get('/test', function(req, res) {
+    const value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    const cookieValue = value? value[2] : null;
+    console.log(cookieValue)
+    console.log(req.sessionID)
+    if(cookieValue == req.sessionID) {
+        return res.send(req.session.passport.user)
+    }
+})
 
 
 
