@@ -10,6 +10,7 @@ module.exports = () => {
          {
             usernameField: 'userId', // req.body.userId
             passwordField: 'password', // req.body.password
+		session: true
         },
          //* 콜백함수의  email과 password는 위에서 설정한 필드이다. 위에서 객체가 전송되면 콜백이 실행된다.
          async (userId, password, done) => {

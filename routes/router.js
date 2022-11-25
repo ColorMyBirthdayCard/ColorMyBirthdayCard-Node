@@ -33,6 +33,7 @@ router.post('/register', async function(req, res) {
 })
 
 router.post('/login', async function(req, res) {
+	console.log("post")
     passport.authenticate('local', (authError, user, info) => {
 
         // done(err)가 처리된 경우
@@ -55,23 +56,26 @@ router.post('/login', async function(req, res) {
               return res.status(401);
            }
            // done(null, user)로 로직이 성공적이라면, 세션에 사용자 정보를 저장해놔서 로그인 상태가 된다.
-
+console.log("login success")
             const userInfor = {
                 sessionId: req.sessionID,
                 userId: req.session.passport.user
-            }
+
+	    }
+		res.setHeader('Access-Control-Allow-origin', '*');
+res.setHeader('Access-Control-Allow-Credentials', 'true'); // 쿠키 주고받기 허용
             return res.send(userInfor);
         });
      })(req, res); //! 미들웨어 내의 미들웨어에는 콜백을 실행시키기위해 (req, res, next)를 붙인다.
 });
 
 router.get('/test', function(req, res) {
-    const value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
-    const cookieValue = value? value[2] : null;
-    console.log(cookieValue)
-    console.log(req.sessionID)
-    if(cookieValue == req.sessionID) {
-        return res.send(req.session.passport.user)
+	console.log(req.isAuthenticated())
+	console.log(req.headers.cookie)
+    if(req.isAuthenticated()){
+    	return res.send(req.session.passport.user)
+    } else {
+	   return res.status(403).send("로그인 필요")
     }
 })
 
