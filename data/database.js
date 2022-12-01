@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-let mongodbURL = 'mongodb://jung:jung@3.101.80.69:27017/cards';
+let mongodbURL = 'mongodb://jung:jung@54.219.68.31:27017/cards';
 if(process.env.MONGODB_URL) {
   mongodbURL = process.env.MONGODB_URL
 }

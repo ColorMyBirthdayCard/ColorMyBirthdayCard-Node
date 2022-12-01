@@ -15,6 +15,7 @@ passportConfig()
 const server = require('http').createServer(app);
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
+
 const whitelist = ["http://localhost:3000"]
 app.use(cors(
 	{
