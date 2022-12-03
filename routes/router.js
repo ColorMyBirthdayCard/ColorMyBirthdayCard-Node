@@ -55,13 +55,14 @@ router.post('/signup', async function(req, res) {
         userId: userId,
         password: hashedPassword
     }
+    let message
     await db.getDb().collection("users").insertOne(user, (err, res) => {
         if(err) {
-            return res. send("Database error")
+            message ="database error"
         }
-        console.log("register 성공")
-        return res.send("register success")
+        message = "register success"
     })
+    res.send(message)
 })
 
 router.post('/login', async function(req, res) {
