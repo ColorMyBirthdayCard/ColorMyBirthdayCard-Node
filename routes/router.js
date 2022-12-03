@@ -55,7 +55,7 @@ router.post('/signup', async function(req, res) {
         userId: userId,
         password: hashedPassword
     }
-    await db.getDb().collection("user").insetOne(user, (err, res) => {
+    await db.getDb().collection("users").insertOne(user, (err, res) => {
         if(err) {
             return res. send("Database error")
         }
