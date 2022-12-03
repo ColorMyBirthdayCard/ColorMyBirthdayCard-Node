@@ -39,7 +39,7 @@ router.post('/signup', async function(req, res) {
     //          console.log()
     //      });
     //   })(req, res); 
-    const { name, password } = req.body
+    const { userId, password } = req.body
     //user Check 
     const existingUser = await db
     .getDb()
