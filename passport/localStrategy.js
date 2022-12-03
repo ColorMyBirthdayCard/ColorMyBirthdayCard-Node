@@ -23,8 +23,6 @@ module.exports = () => {
                // 만일 가입된 회원이면
                if (existingUser) {
                   // 해시비번을 비교
-                  done(null, existingUser); //? 성공이면 done()의 2번째 인수에 선언
-
                   const hashedPassword = await bcrypt.compare(password, existingUser.password);
                   if (hashedPassword) {
                      done(null, existingUser); //? 성공이면 done()의 2번째 인수에 선언
