@@ -17,10 +17,10 @@ router.post('/checkId', async function(req, res) {
     .findOne({userId: userId}) 
     print('1')
     if(existingUser) {
-        return res.status(401).send('이미 존재하는 회원')
+        return res.status(401).send({message: '이미 존재하는 회원'})
     } 
     else {
-        return res.send("가능한 아이디")
+        return res.send({message: "가능한 아이디"})
     }
 })
 
