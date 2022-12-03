@@ -5,41 +5,11 @@ const passport = require('passport')
 const db = require('../data/database');
 const router = express.Router();
 
+//id가 규격!!! 최대 몇글자 -> 비밀번호도 컨벤션
+// 서버도 해야함~~~~~~~~~~~~~~~~ 규격 맞춰서 
 
-router.get('/',  function(req, res) {
-    const user = db.getDb().collection('session').findMany({})
-    console.log(user)
-
-    // res.send("<h1>session store</h1>")
-})
-
-router.post('/signup', async function(req, res) {
-    console.log('sing-up')
-    // passport.authenticate('local-sinup', (authError, user, info) => {
-
-    //     if(authError) {
-    //         console.log('authoError')
-    //         return res.status('401')
-    //     }
-        
-    //     if(!user) {
-    //         console.log("existing-id")
-    //         return res.status('404').send(info.message)
-    //     }
-
-    //     return req.login(user, loginError => {
-    //         //? loginError => 미들웨어는 passport/index.js의 passport.deserializeUser((id, done) => 가 done()이 되면 실행하게 된다.
-    //         // 만일 done(err) 가 됬다면,
-    //         if (loginError) {
-    //            console.error(loginError);
-    //            return res.status(401);
-    //         }
-    //         // done(null, user)로 로직이 성공적이라면, 세션에 사용자 정보를 저장해놔서 로그인 상태가 된다.
-    //          console.log(req.session.passport.user)
-    //          console.log()
-    //      });
-    //   })(req, res); 
-    const { userId, password } = req.body
+router.post('/checkId', async function(req, res) {
+    const { userId } = req.body
     //user Check 
     const existingUser = await db
     .getDb()
@@ -49,6 +19,12 @@ router.post('/signup', async function(req, res) {
     if(existingUser) {
         return res.status(401).send('이미 존재하는 회원')
     }
+})
+
+router.post('/signup', async function(req, res) {
+    console.log('sing-up')
+    const { userId, password } = req.body
+
     const hashedPassword = await bcrypt.hash(password, 12);
     
     const user = {
@@ -103,16 +79,17 @@ router.post('/login', async function(req, res) {
      })(req, res); 
 });
 
-// router.get('/logout')
-
-router.get('/test', function(req, res) {
-	console.log(req.isAuthenticated())
-	console.log(req.headers.cookie)
-    if(req.isAuthenticated()){
-    	return res.send(req.session.passport.user)
-    } else {
-	   return res.status(403).send("로그인 필요")
+router.get('/home', function(req, res) {
+    if(!req.isAuthenticated()){
+        return res.status(403).send("로그인 필요")
     }
+    // 한번에 보내버리기!!!! 좋아유 
+})
+
+router.post('/card', function(req, res) {
+    // 쓴 유저 이름 , 받는 유저 이름! 
+    // 편지 내용
+    // 편지지 선택한거 => index로 
 })
 
 module.exports = router
