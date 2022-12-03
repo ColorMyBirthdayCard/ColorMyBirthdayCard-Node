@@ -15,16 +15,27 @@ router.post('/checkId', async function(req, res) {
     .getDb()
     .collection('users')
     .findOne({userId: userId}) 
-
+    print('1')
     if(existingUser) {
         return res.status(401).send('이미 존재하는 회원')
+    } 
+    else {
+        return res.send("가능한 아이디")
     }
 })
 
 router.post('/signup', async function(req, res) {
     console.log('sing-up')
     const { userId, password } = req.body
+    //user Check 
+    const existingUser = await db
+    .getDb()
+    .collection('users')
+    .findOne({userId: userId}) 
 
+    if(existingUser) {
+        return res.status(401).send('이미 존재하는 회원')
+    }
     const hashedPassword = await bcrypt.hash(password, 12);
     
     const user = {
