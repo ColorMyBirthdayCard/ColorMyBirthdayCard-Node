@@ -15,7 +15,7 @@ router.post('/checkId', async function(req, res) {
     .getDb()
     .collection('users')
     .findOne({userId: userId}) 
-    print('1')
+    console.log('1')
     if(existingUser) {
         return res.status(401).send({message: '이미 존재하는 회원'})
     } 
