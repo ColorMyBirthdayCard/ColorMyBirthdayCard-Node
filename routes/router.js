@@ -13,28 +13,60 @@ router.get('/',  function(req, res) {
     // res.send("<h1>session store</h1>")
 })
 
-router.post('/register', async function(req, res) {
-    const userData = req.body;
-    const userId = userData.userId;
-    const password = userData.password;
+router.post('/signup', async function(req, res) {
+    console.log('sing-up')
+    // passport.authenticate('local-sinup', (authError, user, info) => {
 
-    if(checkExistingUser(userId)) {
-        return res.statusCode(404).send("sada")
+    //     if(authError) {
+    //         console.log('authoError')
+    //         return res.status('401')
+    //     }
+        
+    //     if(!user) {
+    //         console.log("existing-id")
+    //         return res.status('404').send(info.message)
+    //     }
+
+    //     return req.login(user, loginError => {
+    //         //? loginError => 미들웨어는 passport/index.js의 passport.deserializeUser((id, done) => 가 done()이 되면 실행하게 된다.
+    //         // 만일 done(err) 가 됬다면,
+    //         if (loginError) {
+    //            console.error(loginError);
+    //            return res.status(401);
+    //         }
+    //         // done(null, user)로 로직이 성공적이라면, 세션에 사용자 정보를 저장해놔서 로그인 상태가 된다.
+    //          console.log(req.session.passport.user)
+    //          console.log()
+    //      });
+    //   })(req, res); 
+    const { name, password } = req.body
+    //user Check 
+    const existingUser = await db
+    .getDb()
+    .collection('users')
+    .findOne({userId: userId}) 
+
+    if(existingUser) {
+        return res.status(401).send('이미 존재하는 회원')
     }
-
     const hashedPassword = await bcrypt.hash(password, 12);
     
     const user = {
         userId: userId,
         password: hashedPassword
     }
-    await db.getDb().collection("user").insetOne(user)
-    res.send("done login") //done
+    await db.getDb().collection("user").insetOne(user, (err, res) => {
+        if(err) {
+            return res. send("Database error")
+        }
+        console.log("register 성공")
+        return res.send("register success")
+    })
 })
 
 router.post('/login', async function(req, res) {
 	console.log("post")
-    passport.authenticate('local', (authError, user, info) => {
+    passport.authenticate('local-login', (authError, user, info) => {
 
         // done(err)가 처리된 경우
         if (authError) {
@@ -66,6 +98,8 @@ router.post('/login', async function(req, res) {
      })(req, res); //! 미들웨어 내의 미들웨어에는 콜백을 실행시키기위해 (req, res, next)를 붙인다.
 });
 
+router.get('/logout')
+
 router.get('/test', function(req, res) {
 	console.log(req.isAuthenticated())
 	console.log(req.headers.cookie)
@@ -75,9 +109,5 @@ router.get('/test', function(req, res) {
 	   return res.status(403).send("로그인 필요")
     }
 })
-
-
-
-
 
 module.exports = router
