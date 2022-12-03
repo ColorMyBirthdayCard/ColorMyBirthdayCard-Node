@@ -67,7 +67,7 @@ router.post('/signup', async function(req, res) {
 
 router.post('/login', async function(req, res) {
 	console.log("post")
-    passport.authenticate('local-login', (authError, user, info) => {
+    passport.authenticate('local', (authError, user, info) => {
 
         // done(err)가 처리된 경우
         if (authError) {
