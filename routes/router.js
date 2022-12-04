@@ -90,17 +90,40 @@ router.post('/login', async function(req, res) {
      })(req, res); 
 });
 
-router.get('/home', function(req, res) {
+router.get('/home', async function(req, res) {
     if(!req.isAuthenticated()){
         return res.status(403).send("로그인 필요")
     }
+    const {userId} = req.body
+    const comments = await db
+    .getDb()
+    .collection('cards')
+    .find({ userId: userId }).toArray();
+
+    console.log(comments)
+    return res.send({comments: comments})
     // 한번에 보내버리기!!!! 좋아유 
 })
 
-router.post('/card', function(req, res) {
-    // 쓴 유저 이름 , 받는 유저 이름! 
-    // 편지 내용
-    // 편지지 선택한거 => index로 
+router.post('/card', async function(req, res) {
+    const {userId, writerId, content, letterIndex} = req.body
+
+    const newLetter = {
+        userId : userId,
+        writerId : writerId,
+        content : content,
+        letterIndex : letterIndex,
+        date: new Date()
+    }
+
+    await db
+        .getDb()
+        .collection('cards')
+        .insertOne(newLetter)
+    const comments = await db
+    .getDb()
+    .collection('comments')
+    .findOne({ postId: postId })
 })
 
 module.exports = router
