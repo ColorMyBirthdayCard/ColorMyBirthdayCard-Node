@@ -8,8 +8,6 @@ const router = express.Router();
 const ObjectId = mongodb.ObjectId;
 
 
-//id가 규격!!! 최대 몇글자 -> 비밀번호도 컨벤션
-// 서버도 해야함~~~~~~~~~~~~~~~~ 규격 맞춰서 
 
 router.post('/api/v1/checkId', async function(req, res) {
     const { userId } = req.body
@@ -94,17 +92,17 @@ router.post('/api/v1/login', async function(req, res) {
 });
 
 router.get('/api/v1/home/:id', async function(req, res) {
-    if(!req.isAuthenticated()){
-        return res.status(403).send("로그인 필요")
-    }
+    // if(!req.isAuthenticated()){
+    //     return res.status(403).send("로그인 필요")
+    // }
     const userId = req.params.id
-    const comments = await db
+    const cardList = await db
     .getDb()
     .collection('cards')
-    .find({_id: new ObjectId(userId)}).toArray();
+    .find({userId: new ObjectId(userId)}).toArray();
 
-    console.log(comments)
-    return res.send({comments: comments})
+    console.log(cardList)
+    return res.send({cardList: cardList})
     // 한번에 보내버리기!!!! 좋아유 
 })
  
@@ -124,10 +122,6 @@ router.post('/api/v1/card/:id', async function(req, res) {
         .getDb()
         .collection('cards')
         .insertOne(newLetter)
-    const comments = await db
-    .getDb()
-    .collection('comments')
-    .findOne({ postId: postId })
 })
 
 module.exports = router
