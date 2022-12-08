@@ -102,7 +102,7 @@ router.get('/api/v1/home/:id', async function(req, res) {
     .find({userId: new ObjectId(userId)}).toArray();
 
     console.log(cardList)
-    return res.send({cardList: cardList})
+    return res.send(cardList)
     // 한번에 보내버리기!!!! 좋아유 
 })
  
