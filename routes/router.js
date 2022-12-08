@@ -1,14 +1,17 @@
 const express = require('express');
 const bcrypt = require('bcryptjs')
 const passport = require('passport')
+const mongodb = require('mongodb');
 
 const db = require('../data/database');
 const router = express.Router();
+const ObjectId = mongodb.ObjectId;
+
 
 //id가 규격!!! 최대 몇글자 -> 비밀번호도 컨벤션
 // 서버도 해야함~~~~~~~~~~~~~~~~ 규격 맞춰서 
 
-router.post('/checkId', async function(req, res) {
+router.post('/api/v1/checkId', async function(req, res) {
     const { userId } = req.body
     //user Check 
     const existingUser = await db
@@ -24,7 +27,7 @@ router.post('/checkId', async function(req, res) {
     }
 })
 
-router.post('/signup', async function(req, res) {
+router.post('/api/v1/signup', async function(req, res) {
     console.log('sing-up')
     const { userId, password } = req.body
     //user Check 
@@ -52,7 +55,7 @@ router.post('/signup', async function(req, res) {
     res.send(message)
 })
 
-router.post('/login', async function(req, res) {
+router.post('/api/v1/login', async function(req, res) {
 	console.log("post")
     passport.authenticate('local', (authError, user, info) => {
 
@@ -90,26 +93,27 @@ router.post('/login', async function(req, res) {
      })(req, res); 
 });
 
-router.get('/home', async function(req, res) {
+router.get('/api/v1/home/:id', async function(req, res) {
     if(!req.isAuthenticated()){
         return res.status(403).send("로그인 필요")
     }
-    const {userId} = req.body
+    const userId = req.params.id
     const comments = await db
     .getDb()
     .collection('cards')
-    .find({ userId: userId }).toArray();
+    .find({_id: new ObjectId(userId)}).toArray();
 
     console.log(comments)
     return res.send({comments: comments})
     // 한번에 보내버리기!!!! 좋아유 
 })
-
-router.post('/card', async function(req, res) {
-    const {userId, writerId, content, letterIndex} = req.body
+ 
+router.post('/api/v1/card/:id', async function(req, res) {
+    const userId = req.params.id
+    const {writerId, content, letterIndex} = req.body
 
     const newLetter = {
-        userId : userId,
+        userId : new ObjectId(userId),
         writerId : writerId,
         content : content,
         letterIndex : letterIndex,
