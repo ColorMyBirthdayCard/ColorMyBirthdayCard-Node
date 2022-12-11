@@ -92,9 +92,6 @@ router.post('/api/v1/login', async function(req, res) {
 });
 
 router.get('/api/v1/home/:id', async function(req, res) {
-    // if(!req.isAuthenticated()){
-    //     return res.status(403).send("로그인 필요")
-    // }
     const userId = req.params.id
     const cardList = await db
     .getDb()
@@ -108,11 +105,12 @@ router.get('/api/v1/home/:id', async function(req, res) {
  
 router.post('/api/v1/card/:id', async function(req, res) {
     const userId = req.params.id
-    const {writerId, content, letterIndex} = req.body
+    const {writerId, cakeIndex, content, letterIndex} = req.body
 
     const newLetter = {
         userId : new ObjectId(userId),
         writerId : writerId,
+        cakeIndex: cakeIndex,
         content : content,
         letterIndex : letterIndex,
         date: new Date()
