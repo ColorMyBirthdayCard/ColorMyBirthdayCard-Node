@@ -27,7 +27,7 @@ router.post('/api/v1/checkId', async function(req, res) {
 
 router.post('/api/v1/signup', async function(req, res) {
     console.log('sing-up')
-    const { userId, password } = req.body
+    const { userId, password, userName, userBirthday } = req.body
     //user Check 
     const existingUser = await db
     .getDb()
@@ -41,7 +41,9 @@ router.post('/api/v1/signup', async function(req, res) {
     
     const user = {
         userId: userId,
-        password: hashedPassword
+        password: hashedPassword,
+        userName: userName,
+        userBirthday: userBirthday,
     }
     let message
     await db.getDb().collection("users").insertOne(user, (err, res) => {
@@ -119,7 +121,12 @@ router.post('/api/v1/card/:id', async function(req, res) {
     await db
         .getDb()
         .collection('cards')
-        .insertOne(newLetter)
+        .insertOne(newLetter, (err, res) => {
+            if(err) {
+                res.send({message: 'db error'})
+            }
+            res.send({message: '저장 서공'})
+        })
 })
 
 module.exports = router
