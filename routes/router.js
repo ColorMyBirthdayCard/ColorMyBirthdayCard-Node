@@ -117,16 +117,17 @@ router.post('/api/v1/card/:id', async function(req, res) {
         letterIndex : letterIndex,
         date: new Date()
     }
-
-    await db
+    try {
+        await db
         .getDb()
         .collection('cards')
-        .insertOne(newLetter, (err, res) => {
-            if(err) {
-                res.send({message: 'db error'})
-            }
-            res.send({message: '저장 서공'})
-        })
+        .insertOne(newLetter)
+        res.send('success')
+    } catch(e) {
+        res.send('db err')
+    }
+   
+    
 })
 
 module.exports = router
