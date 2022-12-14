@@ -39,7 +39,7 @@ app.use(appRouter)
 
 db.initDatabase()
   .then(function () {
-    server.listen(8080, function() {
+    server.listen(3030, function() {
         console.log("suceess")
     });
   })
