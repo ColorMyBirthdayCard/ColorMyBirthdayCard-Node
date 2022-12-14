@@ -8,6 +8,16 @@ const router = express.Router();
 const ObjectId = mongodb.ObjectId;
 
 
+function isValidObjectId(id){
+    
+    if(ObjectId.isValid(id)){
+        if((String)(new ObjectId(id)) === id) {
+            return true;
+        }
+        return false;
+    }
+    return false;
+}
 
 router.post('/api/v1/checkId', async function(req, res) {
     const { userId } = req.body
@@ -95,6 +105,11 @@ router.post('/api/v1/login', async function(req, res) {
 
 router.get('/api/v1/home/:id', async function(req, res) {
     const userId = req.params.id
+
+    if(isValidObjectId(userId)) {
+        return res.status(404).send({message: "user not exist"})
+    }
+    
     const cardList = await db
     .getDb()
     .collection('cards')
@@ -103,19 +118,23 @@ router.get('/api/v1/home/:id', async function(req, res) {
 
     console.log("cardList")
 
-    try {
-        const userInfo = await db
+    const userInfo = await db
         .getDb()
         .collection('users')
         .findOne({_id: new ObjectId(userId)})
-        return res.send({letter: cardList, name: userInfo.name, birthday: userInfo.birthday})
-    } catch(e) {
+    
+    if(!userInfo) {
         return res.status(404).send({message: "user not exist"})
     }
+    return res.send({letter: cardList, name: userInfo.name, birthday: userInfo.birthday})
 })
  
 router.post('/api/v1/card/:id', async function(req, res) {
     const userId = req.params.id
+    
+    if(isValidObjectId(userId)) {
+        return res.status(404).send({message: "user not exist"})
+    }
     const {writerId, cakeIndex, content, letterIndex} = req.body
 
     const newLetter = {
