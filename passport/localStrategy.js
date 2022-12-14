@@ -19,7 +19,9 @@ module.exports = () => {
                const existingUser = await db
                .getDb()
                .collection('users')
-               .findOne({userId: userId})
+               .findOne({userId: userId}, (err, res) => {
+                  if(err) throw err
+               })
                // 만일 가입된 회원이면
                if (existingUser) {
                   // 해시비번을 비교

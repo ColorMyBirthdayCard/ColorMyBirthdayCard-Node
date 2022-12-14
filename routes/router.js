@@ -22,62 +22,77 @@ function isValidObjectId(id){
 router.post('/api/v1/checkId', async function(req, res) {
     const { userId } = req.body
     //user Check 
-    const existingUser = await db
-    .getDb()
-    .collection('users')
-    .findOne({userId: userId}) 
-    console.log('1')
-    if(existingUser) {
-        return res.status(401).send({message: '이미 존재하는 회원'})
-    } 
-    else {
-        return res.send({message: "가능한 아이디"})
+    try {
+        const existingUser = await db
+        .getDb()
+        .collection('users')
+        .findOne({userId: userId}, (err, res) => {
+            if (err) throw err
+        }) 
+        if(existingUser) {
+            return res.status(401).send({message: '이미 존재하는 회원'})
+        } 
+        else {
+            return res.send({message: "가능한 아이디"})
+        }
     }
+    catch {
+        res.status(500).send({message: e})
+    }
+
+
 })
 
 router.post('/api/v1/signup', async function(req, res) {
     console.log('sing-up')
     const { userId, password, name, birthday } = req.body
     //user Check 
+    try {
     const existingUser = await db
     .getDb()
     .collection('users')
-    .findOne({userId: userId}) 
-
-    if(existingUser) {
-        return res.status(401).send('이미 존재하는 회원')
-    }
-    const hashedPassword = await bcrypt.hash(password, 12);
+    .findOne({userId: userId}, (err, res) => {
+        if(err) {
+            throw err
+        }
+    }) 
     
+    if(!existingUser) {
+        return res.status(401).send({message: '이미 존재하는 회원'})
+    }
+    
+    const hashedPassword = await bcrypt.hash(password, 12);
+
     const user = {
         userId: userId,
         password: hashedPassword,
         name: name,
         birthday: birthday,
     }
-    let message
     await db.getDb().collection("users").insertOne(user, (err, res) => {
         if(err) {
-            message ="database error"
+            throw err
         }
-        message = "register success"
     })
-    res.send(message)
+
+    res.send({message: "Signup Success"})
+    } catch (e) {
+        res.status(500).send({message: e})
+    }
 })
 
 router.post('/api/v1/login', async function(req, res) {
 	console.log("post")
     passport.authenticate('local', (authError, user, info) => {
 
-        // done(err)가 처리된 경우
+        // done(err)가 처리된 경우(DB 오류)
         if (authError) {
            console.error(authError);
            console.log('auth error')
-           return res.status(401)
+           return res.status(500).send({message: authError})
         }
         //비번 일치 X or 존재 X user
         if (!user) {
-           // done()의 3번째 인자 { message: '비밀번호가 일치하지 않습니다.' }가 실행
            console.log("not exist user")
            return res.status(401).send(info.message);
         }
@@ -89,7 +104,7 @@ router.post('/api/v1/login', async function(req, res) {
            if (loginError) {
               console.error(loginError);
               console.log("login.errr")
-              return res.status(401);
+              return res.status(500);
            }
            // done(null, user)로 로직이 성공적이라면, 세션에 사용자 정보를 저장해놔서 로그인 상태가 된다.
             const userInfor = {
@@ -107,27 +122,34 @@ router.get('/api/v1/home/:id', async function(req, res) {
     const userId = req.params.id
     
     if(!isValidObjectId(userId)) {
-
         return res.status(404).send({message: "user not exist"})
     }
     
-    const cardList = await db
-    .getDb()
-    .collection('cards')
-    .find({userId: new ObjectId(userId)})
-    .toArray();
+    try {
+        const cardList = await db
+        .getDb()
+        .collection('cards')
+        .find({userId: new ObjectId(userId)}, (err, res) => {
+            if (err) throw err
+        })
+        .toArray();
 
-    console.log("cardList")
+        console.log("cardList")
 
-    const userInfo = await db
+        const userInfo = await db
         .getDb()
         .collection('users')
-        .findOne({_id: new ObjectId(userId)})
-    
-    if(!userInfo) {
-        return res.status(404).send({message: "user not exist"})
+        .findOne({_id: new ObjectId(userId)}, (err, res) => {
+            if(err) throw err
+        })
+        if(!userInfo) {
+            return res.status(404).send({message: "user not exist"})
+        }
+
+        return res.send({letter: cardList, name: userInfo.name, birthday: userInfo.birthday})
+    } catch(e) {
+        return res.status(500).send({message: e})
     }
-    return res.send({letter: cardList, name: userInfo.name, birthday: userInfo.birthday})
 })
  
 router.post('/api/v1/card/:id', async function(req, res) {
@@ -150,13 +172,13 @@ router.post('/api/v1/card/:id', async function(req, res) {
         await db
         .getDb()
         .collection('cards')
-        .insertOne(newLetter)
-        res.send('success')
+        .insertOne(newLetter, (err, res) => {
+            if(err) throw err
+        })
+        res.send('card save success')
     } catch(e) {
-        res.send('db err')
+        res.status(500).send('database error')
     }
-   
-    
 })
 
 module.exports = router
