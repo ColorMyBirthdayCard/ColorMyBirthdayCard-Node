@@ -42,8 +42,8 @@ router.post('/api/v1/signup', async function(req, res) {
     const user = {
         userId: userId,
         password: hashedPassword,
-        userName: userName,
-        userBirthday: userBirthday,
+        userName: name,
+        userBirthday: birthday,
     }
     let message
     await db.getDb().collection("users").insertOne(user, (err, res) => {
