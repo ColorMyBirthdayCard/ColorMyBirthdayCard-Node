@@ -101,10 +101,12 @@ router.get('/api/v1/home/:id', async function(req, res) {
     .find({userId: new ObjectId(userId)})
     .toArray();
 
+    console.log("cardList")
+
     const userInfo = await db
     .getDb()
     .collection('users')
-    .findOne({userId: new ObjectId(userId)})
+    .findOne({_id: new ObjectId(userId)})
     
     console.log(userInfo)
 
