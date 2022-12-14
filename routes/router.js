@@ -103,19 +103,15 @@ router.get('/api/v1/home/:id', async function(req, res) {
 
     console.log("cardList")
 
-    const userInfo = await db
-    .getDb()
-    .collection('users')
-    .findOne({_id: new ObjectId(userId)})
-    
-    if(!userInfo) {
+    try {
+        const userInfo = await db
+        .getDb()
+        .collection('users')
+        .findOne({_id: new ObjectId(userId)})
+        return res.send({letter: cardList, name: userInfo.name, birthday: userInfo.birthday})
+    } catch(e) {
         return res.status(404).send({message: "user not exist"})
     }
-
-    console.log(userInfo)
-
-    return res.send({letter: cardList, name: userInfo.name, birthday: userInfo.birthday})
-    // 한번에 보내버리기!!!! 좋아유 
 })
  
 router.post('/api/v1/card/:id', async function(req, res) {
