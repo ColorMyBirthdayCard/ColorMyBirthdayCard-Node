@@ -16,10 +16,9 @@ const server = require('http').createServer(app);
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
-const whitelist = ["http://localhost:3000"]
 app.use(cors(
 	{
-		origin:'http://localhost:3000',
+		origin:'http://117.17.198.45:3000',
 		credentials: true
 	}
 ));
