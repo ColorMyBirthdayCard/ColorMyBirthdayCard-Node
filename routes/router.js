@@ -108,7 +108,7 @@ router.get('/api/v1/home/:id', async function(req, res) {
     
     console.log(userInfo)
 
-    return res.send({data: {letter: cardList, name: userInfo.userName, birthday: userInfo.userBirthday}})
+    return res.send({data: {letter: cardList, name: userInfo.name, birthday: userInfo.birthday}})
     // 한번에 보내버리기!!!! 좋아유 
 })
  
