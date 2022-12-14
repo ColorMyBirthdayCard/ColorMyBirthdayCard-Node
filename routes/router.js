@@ -105,8 +105,9 @@ router.post('/api/v1/login', async function(req, res) {
 
 router.get('/api/v1/home/:id', async function(req, res) {
     const userId = req.params.id
+    
+    if(!isValidObjectId(userId)) {
 
-    if(isValidObjectId(userId)) {
         return res.status(404).send({message: "user not exist"})
     }
     
@@ -132,7 +133,7 @@ router.get('/api/v1/home/:id', async function(req, res) {
 router.post('/api/v1/card/:id', async function(req, res) {
     const userId = req.params.id
     
-    if(isValidObjectId(userId)) {
+    if(!isValidObjectId(userId)) {
         return res.status(404).send({message: "user not exist"})
     }
     const {writerId, cakeIndex, content, letterIndex} = req.body
