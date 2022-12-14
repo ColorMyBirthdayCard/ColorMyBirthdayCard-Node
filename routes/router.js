@@ -27,7 +27,7 @@ router.post('/api/v1/checkId', async function(req, res) {
 
 router.post('/api/v1/signup', async function(req, res) {
     console.log('sing-up')
-    const { userId, password, userName, userBirthday } = req.body
+    const { userId, password, name, birthday } = req.body
     //user Check 
     const existingUser = await db
     .getDb()
@@ -98,10 +98,17 @@ router.get('/api/v1/home/:id', async function(req, res) {
     const cardList = await db
     .getDb()
     .collection('cards')
-    .find({userId: new ObjectId(userId)}).toArray();
+    .find({userId: new ObjectId(userId)})
+    .toArray();
 
-    console.log(cardList)
-    return res.send(cardList)
+    const userInfo = await db
+    .getDb()
+    .collection('users')
+    .findOne({userId: new ObjectId(userId)}, {_id:0, userId:0, password:0})
+    
+    console.log(userInfo)
+
+    return res.send({data: {letter: cardList, name: userInfo.userName, birthday: userInfo.userBirthday}})
     // 한번에 보내버리기!!!! 좋아유 
 })
  
