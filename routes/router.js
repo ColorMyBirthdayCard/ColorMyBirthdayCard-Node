@@ -104,7 +104,7 @@ router.get('/api/v1/home/:id', async function(req, res) {
     const userInfo = await db
     .getDb()
     .collection('users')
-    .findOne({userId: new ObjectId(userId)}, {_id:0, userId:0, password:0})
+    .findOne({userId: new ObjectId(userId)})
     
     console.log(userInfo)
 
