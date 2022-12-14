@@ -108,6 +108,10 @@ router.get('/api/v1/home/:id', async function(req, res) {
     .collection('users')
     .findOne({_id: new ObjectId(userId)})
     
+    if(!userInfo) {
+        return res.status(404).send({message: "user not exist"})
+    }
+
     console.log(userInfo)
 
     return res.send({letter: cardList, name: userInfo.name, birthday: userInfo.birthday})
