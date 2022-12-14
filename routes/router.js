@@ -42,8 +42,8 @@ router.post('/api/v1/signup', async function(req, res) {
     const user = {
         userId: userId,
         password: hashedPassword,
-        userName: name,
-        userBirthday: birthday,
+        name: name,
+        birthday: birthday,
     }
     let message
     await db.getDb().collection("users").insertOne(user, (err, res) => {
@@ -110,7 +110,7 @@ router.get('/api/v1/home/:id', async function(req, res) {
     
     console.log(userInfo)
 
-    return res.send({data: {letter: cardList, name: userInfo.name, birthday: userInfo.birthday}})
+    return res.send({letter: cardList, name: userInfo.name, birthday: userInfo.birthday})
     // 한번에 보내버리기!!!! 좋아유 
 })
  
